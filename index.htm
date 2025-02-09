@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Myst Unisex Salon</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .customer-list {
+            margin-top: 20px;
+        }
+        .customer-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .customer-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="login-section">
+            <h1>Admin Login</h1>
+            <form id="login-form">
+                <label for="username">Username:</label>
+                <input type="text" id="username" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- Admin Panel (Hidden by Default) -->
+        <div id="admin-panel" class="hidden">
+            <h1>Admin Panel</h1>
+
+            <!-- Search Customer -->
+            <form id="search-customer-form">
+                <label for="search-email">Search by Email:</label>
+                <input type="text" id="search-email" placeholder="Enter email">
+                <label for="search-phone">Search by Phone:</label>
+                <input type="text" id="search-phone" placeholder="Enter phone number">
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- View All Customers -->
+            <button id="view-all-customers">View All Customers</button>
+
+            <!-- Customer List -->
+            <div class="customer-list" id="customer-list"></div>
+
+            <!-- Edit Customer Form -->
+            <form id="edit-customer-form" class="hidden">
+                <h2>Edit Customer</h2>
+                <input type="hidden" id="edit-id">
+                <label for="edit-email">Email:</label>
+                <input type="text" id="edit-email" required>
+                <label for="edit-phone">Phone:</label>
+                <input type="text" id="edit-phone" required>
+                <label for="edit-firstname">First Name:</label>
+                <input type="text" id="edit-firstname" required>
+                <label for="edit-lastname">Last Name:</label>
+                <input type="text" id="edit-lastname" required>
+                <label for="edit-lastappointment">Last Appointment:</label>
+                <input type="text" id="edit-lastappointment">
+                <label for="edit-lastservice">Last Service Taken:</label>
+                <input type="text" id="edit-lastservice">
+                <button type="submit">Update Customer</button>
+            </form>
+
+            <!-- Add New Customer -->
+            <form id="add-customer-form">
+                <h2>Add New Customer</h2>
+                <label for="add-email">Email:</label>
+                <input type="text" id="add-email" required>
+                <label for="add-phone">Phone:</label>
+                <input type="text" id="add-phone" required>
+                <label for="add-firstname">First Name:</label>
+                <input type="text" id="add-firstname" required>
+                <label for="add-lastname">Last Name:</label>
+                <input type="text" id="add-lastname" required>
+                <label for="add-interested">Interested In:</label>
+                <textarea id="add-interested"></textarea>
+                <button type="submit">Add Customer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://myst.karankhosla99.workers.dev/'; // Replace with your API URL
+
+        // Login Functionality
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'Mystadmin' && password === 'aadlers') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+
+        // Search Customer
+        document.getElementById('search-customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('search-email').value;
+            const phone = document.getElementById('search-phone').value;
+
+            const url = `${API_URL}?email=${email}&phonenumber=${phone}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            displayCustomers(data.data);
+        });
+
+        // View All Customers
+        document.getElementById('view-all-customers').addEventListener('click', async () => {
+            const url = `${API_URL}?all=true`;
+            const response = await fetch(url);
+            const data = await response.json();
+            displayCustomers(data.data);
+        });
+
+        // Add New Customer
+        document.getElementById('add-customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newCustomer = {
+                email: document.getElementById('add-email').value,
+                phonenumber: document.getElementById('add-phone').value,
+                firstname: document.getElementById('add-firstname').value,
+                lastname: document.getElementById('add-lastname').value,
+                intrested: document.getElementById('add-interested').value,
+                websitevisted: new Date().toISOString()
+            };
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newCustomer)
+            });
+            const data = await response.json();
+            alert('Customer added successfully!');
+            document.getElementById('add-customer-form').reset();
+        });
+
+        // Edit Customer
+        document.getElementById('edit-customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedCustomer = {
+                email: document.getElementById('edit-email').value,
+                phonenumber: document.getElementById('edit-phone').value,
+                firstname: document.getElementById('edit-firstname').value,
+                lastname: document.getElementById('edit-lastname').value,
+                lastappointment: document.getElementById('edit-lastappointment').value,
+                lastservicetaken: document.getElementById('edit-lastservice').value,
+                update: true
+            };
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedCustomer)
+            });
+            const data = await response.json();
+            alert('Customer updated successfully!');
+            document.getElementById('edit-customer-form').classList.add('hidden');
+        });
+
+        // Display Customers
+        function displayCustomers(customers) {
+            const customerList = document.getElementById('customer-list');
+            customerList.innerHTML = '';
+
+            customers.forEach(customer => {
+                const customerItem = document.createElement('div');
+                customerItem.className = 'customer-item';
+                customerItem.innerHTML = `
+                    <p><strong>Name:</strong> ${customer.firstname} ${customer.lastname}</p>
+                    <p><strong>Email:</strong> ${customer.email}</p>
+                    <p><strong>Phone:</strong> ${customer.phonenumber}</p>
+                    <p><strong>Last Appointment:</strong> ${customer.lastappointment || 'N/A'}</p>
+                    <p><strong>Last Service:</strong> ${customer.lastservicetaken || 'N/A'}</p>
+                    <button onclick="editCustomer('${customer.email}', '${customer.phonenumber}')">Edit</button>
+                `;
+                customerList.appendChild(customerItem);
+            });
+        }
+
+        // Edit Customer
+        window.editCustomer = async (email, phone) => {
+            const url = `${API_URL}?email=${email}&phonenumber=${phone}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const customer = data.data[0];
+
+            document.getElementById('edit-id').value = customer.id;
+            document.getElementById('edit-email').value = customer.email;
+            document.getElementById('edit-phone').value = customer.phonenumber;
+            document.getElementById('edit-firstname').value = customer.firstname;
+            document.getElementById('edit-lastname').value = customer.lastname;
+            document.getElementById('edit-lastappointment').value = customer.lastappointment || '';
+            document.getElementById('edit-lastservice').value = customer.lastservicetaken || '';
+            document.getElementById('edit-customer-form').classList.remove('hidden');
+        };
+    </script>
+</body>
+</html>
