@@ -4,136 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Myst Unisex Salon</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
         }
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="password"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
+            margin-top: 50px;
         }
         .hidden {
             display: none;
         }
-        .customer-list {
-            margin-top: 20px;
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
         }
-        .customer-item {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-        .customer-item:last-child {
-            border-bottom: none;
+        .btn-edit {
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Login Section -->
-        <div id="login-section">
-            <h1>Admin Login</h1>
+        <div id="login-section" class="card p-4">
+            <h1 class="text-center mb-4">Admin Login</h1>
             <form id="login-form">
-                <label for="username">Username:</label>
-                <input type="text" id="username" required>
-                <label for="password">Password:</label>
-                <input type="password" id="password" required>
-                <button type="submit">Login</button>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
         </div>
 
         <!-- Admin Panel (Hidden by Default) -->
         <div id="admin-panel" class="hidden">
-            <h1>Admin Panel</h1>
+            <h1 class="text-center mb-4">Admin Panel</h1>
 
             <!-- Search Customer -->
-            <form id="search-customer-form">
-                <label for="search-email">Search by Email:</label>
-                <input type="text" id="search-email" placeholder="Enter email">
-                <label for="search-phone">Search by Phone:</label>
-                <input type="text" id="search-phone" placeholder="Enter phone number">
-                <button type="submit">Search</button>
-            </form>
+            <div class="card p-4 mb-4">
+                <h2>Search Customer</h2>
+                <form id="search-customer-form" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="search-email" class="form-label">Search by Email:</label>
+                        <input type="text" id="search-email" class="form-control" placeholder="Enter email">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="search-phone" class="form-label">Search by Phone:</label>
+                        <input type="text" id="search-phone" class="form-control" placeholder="Enter phone number">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </div>
+                </form>
+            </div>
 
             <!-- View All Customers -->
-            <button id="view-all-customers">View All Customers</button>
-
-            <!-- Customer List -->
-            <div class="customer-list" id="customer-list"></div>
+            <div class="card p-4 mb-4">
+                <h2>All Customers</h2>
+                <button id="view-all-customers" class="btn btn-secondary mb-3">View All Customers</button>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Last Appointment</th>
+                                <th>Last Service</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-list">
+                            <!-- Customer rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <!-- Edit Customer Form -->
-            <form id="edit-customer-form" class="hidden">
+            <div id="edit-customer-form" class="card p-4 mb-4 hidden">
                 <h2>Edit Customer</h2>
-                <input type="hidden" id="edit-id">
-                <label for="edit-email">Email:</label>
-                <input type="text" id="edit-email" required>
-                <label for="edit-phone">Phone:</label>
-                <input type="text" id="edit-phone" required>
-                <label for="edit-firstname">First Name:</label>
-                <input type="text" id="edit-firstname" required>
-                <label for="edit-lastname">Last Name:</label>
-                <input type="text" id="edit-lastname" required>
-                <label for="edit-lastappointment">Last Appointment:</label>
-                <input type="text" id="edit-lastappointment">
-                <label for="edit-lastservice">Last Service Taken:</label>
-                <input type="text" id="edit-lastservice">
-                <button type="submit">Update Customer</button>
-            </form>
+                <form id="edit-form">
+                    <input type="hidden" id="edit-id">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="edit-email" class="form-label">Email:</label>
+                            <input type="text" id="edit-email" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit-phone" class="form-label">Phone:</label>
+                            <input type="text" id="edit-phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit-firstname" class="form-label">First Name:</label>
+                            <input type="text" id="edit-firstname" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit-lastname" class="form-label">Last Name:</label>
+                            <input type="text" id="edit-lastname" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit-lastappointment" class="form-label">Last Appointment:</label>
+                            <input type="text" id="edit-lastappointment" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="edit-lastservice" class="form-label">Last Service Taken:</label>
+                            <input type="text" id="edit-lastservice" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Update Customer</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeEditForm()">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <!-- Add New Customer -->
-            <form id="add-customer-form">
+            <div class="card p-4">
                 <h2>Add New Customer</h2>
-                <label for="add-email">Email:</label>
-                <input type="text" id="add-email" required>
-                <label for="add-phone">Phone:</label>
-                <input type="text" id="add-phone" required>
-                <label for="add-firstname">First Name:</label>
-                <input type="text" id="add-firstname" required>
-                <label for="add-lastname">Last Name:</label>
-                <input type="text" id="add-lastname" required>
-                <label for="add-interested">Interested In:</label>
-                <textarea id="add-interested"></textarea>
-                <button type="submit">Add Customer</button>
-            </form>
+                <form id="add-customer-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="add-email" class="form-label">Email:</label>
+                            <input type="text" id="add-email" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="add-phone" class="form-label">Phone:</label>
+                            <input type="text" id="add-phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="add-firstname" class="form-label">First Name:</label>
+                            <input type="text" id="add-firstname" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="add-lastname" class="form-label">Last Name:</label>
+                            <input type="text" id="add-lastname" class="form-control" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="add-interested" class="form-label">Interested In:</label>
+                            <textarea id="add-interested" class="form-control"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Add Customer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_URL = 'https://myst.karankhosla99.workers.dev/'; // Replace with your API URL
 
@@ -194,7 +221,7 @@
         });
 
         // Edit Customer
-        document.getElementById('edit-customer-form').addEventListener('submit', async (e) => {
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const updatedCustomer = {
                 email: document.getElementById('edit-email').value,
@@ -213,26 +240,27 @@
             });
             const data = await response.json();
             alert('Customer updated successfully!');
-            document.getElementById('edit-customer-form').classList.add('hidden');
+            closeEditForm();
         });
 
-        // Display Customers
+        // Display Customers in Table
         function displayCustomers(customers) {
             const customerList = document.getElementById('customer-list');
             customerList.innerHTML = '';
 
             customers.forEach(customer => {
-                const customerItem = document.createElement('div');
-                customerItem.className = 'customer-item';
-                customerItem.innerHTML = `
-                    <p><strong>Name:</strong> ${customer.firstname} ${customer.lastname}</p>
-                    <p><strong>Email:</strong> ${customer.email}</p>
-                    <p><strong>Phone:</strong> ${customer.phonenumber}</p>
-                    <p><strong>Last Appointment:</strong> ${customer.lastappointment || 'N/A'}</p>
-                    <p><strong>Last Service:</strong> ${customer.lastservicetaken || 'N/A'}</p>
-                    <button onclick="editCustomer('${customer.email}', '${customer.phonenumber}')">Edit</button>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.firstname} ${customer.lastname}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.phonenumber}</td>
+                    <td>${customer.lastappointment || 'N/A'}</td>
+                    <td>${customer.lastservicetaken || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-edit" onclick="editCustomer('${customer.email}', '${customer.phonenumber}')">Edit</button>
+                    </td>
                 `;
-                customerList.appendChild(customerItem);
+                customerList.appendChild(row);
             });
         }
 
@@ -251,6 +279,11 @@
             document.getElementById('edit-lastappointment').value = customer.lastappointment || '';
             document.getElementById('edit-lastservice').value = customer.lastservicetaken || '';
             document.getElementById('edit-customer-form').classList.remove('hidden');
+        };
+
+        // Close Edit Form
+        window.closeEditForm = () => {
+            document.getElementById('edit-customer-form').classList.add('hidden');
         };
     </script>
 </body>
